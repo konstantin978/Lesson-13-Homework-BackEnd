@@ -12,13 +12,16 @@
     <form id="registerForm">
         <p>Register</p>
         <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
+        <input type="text" id="username" name="username" >
         <br>
         <label for="email">Email:</label>
-        <input type="text" id="email" name="email" required>
+        <input type="email" id="email" name="email" >
         <br>
         <label for="password">Password:</label>
-        <input type="password" id="password" name="email" required>
+        <input type="password" id="password" name="password" >
+        <br>
+        <label for="photo">Photo:</label>
+        <input type="file" id="photo" name="photo" accept="image/png, image/jpeg, image/jpg">
         <br>
         <button type="submit">Register</button>
     </form>

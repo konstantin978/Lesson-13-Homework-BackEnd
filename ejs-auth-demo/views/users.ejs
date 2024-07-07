@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>User Info</title>
-    <link rel="stylesheet" href="/style.css">
+    <meta charset="UTF-8">
+    <title>User Profile</title>
 </head>
-
 <body>
-    <h1>User Information</h1>
-    <p>Username <%= user %>
-    </p>
+    <h1>Welcome, <%= user %>!</h1>
+    <p>Email: <%= email %></p>
+    <% if (photo) { %>
+        <img src="<%= photo %>" alt="Profile Photo">
+    <% } else { %>
+        <p>No profile photo uploaded.</p>
+    <% } %>
 </body>
-
 </html>
