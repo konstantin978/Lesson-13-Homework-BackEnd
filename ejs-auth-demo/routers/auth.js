@@ -6,35 +6,37 @@ const { generateToken } = require('../middlewares');
 
 const authRouter = express.Router();
 
-const userList = path.join(__dirname, '..', 'model', 'users.json')
-const uploads = path.join(__dirname, '..', 'public', 'uploads')
+const userList = path.join(__dirname, '..', 'model', 'users.json');
 
 authRouter.post('/register', (req, res) => {
-    const { username, email, password, photo } = req.body;
+    const { username, email, password } = req.body;
     let users = JSON.parse(fs.readFileSync(userList, 'utf-8'));
 
-    if (username && email && password) {
-        if (users.find(user => user.email === email)) {
-            return res.status(409).json({ message: 'User already exists' })
-        }
-
-        let photoPath = null;
-        if (photo) {
-            const base64Data = photo.replace(/^data:image\/\w+;base64,/, '')
-            const photoBuffer = Buffer.from(base64Data, 'base64')
-            const photoFilename = `${Date.now()}.jpg`
-            photoPath = path.join('uploads', photoFilename)
-            const photoFilePath = path.join(uploads, photoFilename)
-            fs.writeFileSync(photoFilePath, photoBuffer)
-        }
-
-        users.push({ username, email, password, photo: photoPath })
-        fs.writeFileSync(userList, JSON.stringify(users, null, 2))
-
-        return res.status(201).json({ message: 'User Successfully added' })
+    if (!req.files || !req.files.file) {
+        return res.status(400).json({ message: 'File not found' });
     }
 
-    res.status(400).json({ message: 'Invalid input' });
+    const data = req.files.file;
+    const fileName = Date.now() + '_' + data.name;
+    const filePath = path.join(__dirname, '..', 'public', 'uploads', fileName);
+
+    data.mv(filePath, (err) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ message: err });
+        }
+
+        if (username && email && password) {
+            if (users.find(user => user.email === email)) {
+                return res.status(409).json({ message: 'User already exists' });
+            }
+            users.push({ username, email, password, photo: '/uploads/' + fileName });
+            fs.writeFileSync(userList, JSON.stringify(users, null, 2));
+            return res.status(201).json({ message: 'User Successfully added' });
+        }
+
+        res.status(400).json({ message: 'Invalid input' });
+    });
 });
 
 authRouter.post('/login', (req, res) => {
